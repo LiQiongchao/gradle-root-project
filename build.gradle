@@ -17,3 +17,51 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+/*def map = new HashMap<>()
+// 键必须为 action
+map.put("action", {println("task someone...")})
+
+//task task1 { // 只有任务名和闭包的task定义
+task (map, "task1") {
+    // 任务的配置段:在配置阶段执行
+    println("这是最简单的任务")
+    // 任务的行为：在执行阶段执行，doFirst会在doLast之前执行
+    doFirst {
+        println("task1 doFist")
+    }
+    doLast {
+        println("task1 doLast")
+    }
+}
+
+// task 外部定义doFirst和doLast行为
+task1.doFirst {
+    println("task1 doFirst outer")
+}
+task1.doLast {
+    println("task1 doLast outer")
+}*/
+
+// 任务的依赖方式
+/*task A {
+    doLast {
+        println "TaskA.."
+    }
+}
+task 'B' {
+    doLast {
+        println "TaskB.."
+    }
+}
+//参数方式依赖: dependsOn后面用冒号
+//task 'C'(dependsOn: ['A', 'B']) { // 参数方式依赖
+task 'C'() {
+//    dependsOn=['A', 'B'] // 内部依赖
+    doLast {
+        println "TaskC.."
+    }
+}*/
+
+// 可变参数,引号可加可不加
+//C.dependsOn=[A, 'B'] // 外部依赖
