@@ -18,9 +18,9 @@ test {
     useJUnitPlatform()
 }
 
-task A {
+/*task A {
     group "Qiong"
     doLast {
         println "TaskA.."
     }
-}
+}*/

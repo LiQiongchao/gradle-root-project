@@ -19,10 +19,10 @@ test {
 }
 
 
-task B{
+/*task B{
     dependsOn(":sub-project01:A") //依赖根工程下的subject01中的任务A ：跨项目依赖。
     doLast {
         println "TaskB.."
     }
-}
+}*/
 

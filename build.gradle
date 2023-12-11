@@ -18,50 +18,159 @@ test {
     useJUnitPlatform()
 }
 
-/*def map = new HashMap<>()
-// 键必须为 action
-map.put("action", {println("task someone...")})
+/*  -------------任务的注册方式----------  */
+/*task('A',{//任务名称,闭包都作为参数
+    println "taskA..."
+})
 
-//task task1 { // 只有任务名和闭包的task定义
-task (map, "task1") {
-    // 任务的配置段:在配置阶段执行
-    println("这是最简单的任务")
-    // 任务的行为：在执行阶段执行，doFirst会在doLast之前执行
-    doFirst {
-        println("task1 doFist")
-    }
-    doLast {
-        println("task1 doLast")
-    }
+task('B'){//闭包作为最后一个参数可以直接从括号中拿出来
+    println "taskB..."
 }
 
-// task 外部定义doFirst和doLast行为
-task1.doFirst {
-    println("task1 doFirst outer")
+task C{//groovy语法支持省略方法括号:上面三种本质是一种
+    println "taskC..."
 }
-task1.doLast {
-    println("task1 doLast outer")
+
+def map=new HashMap<String,Object>();
+map.put("action",{println "taskD.."}) //action属性可以设置为闭包
+task(map,"D");
+
+tasks.create('E'){//使用tasks的create方法
+    println "taskE.."
+}
+
+tasks.register('f'){ //注：register执行的是延迟创建。也即只有当task被需要使用的时候才会被创建。
+    println "taskF	"
 }*/
 
-// 任务的依赖方式
-/*task A {
-    doLast {
-        println "TaskA.."
-    }
+
+/*  -------------分配配置项----------  */
+/*
+//①.F是任务名，前面通过具名参数给map的属性赋值,以参数方式指定任务的属性信息
+task(group: "atguigu",description: "this is task B","F")
+
+//②.H是任务名，定义任务的同时，在内部直接指定属性信息
+task("H") {
+    group("atguigu")
+    description("this is the task H")
 }
-task 'B' {
-    doLast {
-        println "TaskB.."
-    }
+
+//③.Y是任务名，给已有的任务 在外部直接指定属性信息
+task "y"{}
+y.group="atguigu"
+clean.group("atguigu") //案例：给已有的clean任务重新指定组信息
+*/
+
+
+/*  -------------演示删除build目录----------  */
+/*tasks.register('myClean', Delete) {
+    delete buildDir // 只能删除当前模块下的 build 目录
+}*/
+
+/*  -------------自定义task类型----------  */
+/*def myTask= task MyDefinitionTask (type: CustomTask)
+
+myTask.doFirst(){
+    println "task 执行之前 执行的 doFirst方法"
 }
-//参数方式依赖: dependsOn后面用冒号
-//task 'C'(dependsOn: ['A', 'B']) { // 参数方式依赖
-task 'C'() {
-//    dependsOn=['A', 'B'] // 内部依赖
-    doLast {
-        println "TaskC.."
+
+myTask.doLast(){
+    println "task 执行之后 执行的 doLast方法"
+}
+
+class CustomTask extends DefaultTask {
+    //@TaskAction表示Task本身要执行的方法
+    @TaskAction
+    def doSelf(){
+        println "Task 自身 在执行的in doSelf"
     }
 }*/
 
-// 可变参数,引号可加可不加
-//C.dependsOn=[A, 'B'] // 外部依赖
+/*  -------------动态分配任务----------  */
+/*4.times { counter ->
+    tasks.register("task$counter") {
+        doLast {
+            println "I'm task number $counter"
+        }
+    }
+}*/
+
+/*4.times { counter ->
+    tasks.register("task$counter") {
+        doLast {
+            println "I'm task number $counter"
+        }
+    }
+}
+task2.enabled=false
+
+tasks.named('task0') { dependsOn('task2', 'task3') }*/
+
+/*  -------------任务超时----------  */
+/*task a() {
+    doLast {
+        Thread.sleep(1000)
+        println "当前任务a执行了"
+    }
+    timeout = Duration.ofMillis(500)
+}
+task b() {
+    doLast {
+        println "当前任务b执行了"
+    }
+}*/
+
+/*  -------------任务查找----------  */
+/*task atguigu {
+    doLast {
+        println "让天下没有难学的技术：尚硅谷"
+    }
+}
+//根据任务名查找（只能查找当前模块下的任务）
+tasks.findByName("atguigu").doFirst({println "尚硅谷校区1：北京...."})
+tasks.getByName("atguigu").doFirst({println "尚硅谷校区2：深圳...."})
+//根据任务路径查找【相对路径】
+tasks.findByPath(":atguigu").doFirst({println "尚硅谷校区3：上海...."})
+tasks.getByPath(":atguigu").doFirst({println "尚硅谷校区4：武汉...."})*/
+
+
+/*  -------------任务的规则----------  */
+/*task hello {
+    doLast {
+        println 'hello 尚硅谷的粉丝们'
+    }
+}
+tasks.addRule("对该规则的一个描述，便于调试、查看等"){
+    String taskName -> task(taskName) {
+        doLast {
+            println "该${taskName}任务不存在，请查证后再执行"
+        }
+    }
+}*/
+
+/*  -------------onlyIf----------  */
+task hello {
+    doLast {
+        println 'hello 尚硅谷的粉丝们'
+    }
+}
+hello.onlyIf { !project.hasProperty('fensi') }
+
+/*  ------------- 默认任务 ----------  */
+defaultTasks 'myClean', 'myRun'
+
+tasks.register('myClean'){
+    doLast {
+        println 'Default Cleaning!'
+    }
+}
+tasks.register('myRun') {
+    doLast {
+        println 'Default Running!'
+    }
+}
+tasks.register('other') {
+    doLast {
+        println "I'm not a default task!"
+    }
+}
