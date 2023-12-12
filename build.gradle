@@ -18,159 +18,64 @@ test {
     useJUnitPlatform()
 }
 
-/*  -------------任务的注册方式----------  */
-/*task('A',{//任务名称,闭包都作为参数
-    println "taskA..."
-})
+//ConfigurableFileTree tree = fileTree('src/main').include('**/*.java')// 第一种方式:使用路径创建文件树对象，同时指定包含的文件
+////第二种方式:通过闭包创建文件树:
+//tree = fileTree('src/main') {
+//    include '**/*.java'
+//}
+//tree = fileTree(dir: 'src/main', include: '**/*.java') //第三种方式:通过路径和闭包创建文件树：具名参数给map传值
+//tree = fileTree(dir: 'src/main', includes: ['**/*.java', '**/*.xml', '**/*.txt'], exclude: '**/*test*/**')
+//tree.each {File file -> // 遍历文件树内的所有文件
+//    println file
+//    println file.name
+//}
 
-task('B'){//闭包作为最后一个参数可以直接从括号中拿出来
-    println "taskB..."
-}
-
-task C{//groovy语法支持省略方法括号:上面三种本质是一种
-    println "taskC..."
-}
-
-def map=new HashMap<String,Object>();
-map.put("action",{println "taskD.."}) //action属性可以设置为闭包
-task(map,"D");
-
-tasks.create('E'){//使用tasks的create方法
-    println "taskE.."
-}
-
-tasks.register('f'){ //注：register执行的是延迟创建。也即只有当task被需要使用的时候才会被创建。
-    println "taskF	"
+/*task copyTask(type: Copy) {
+    from 'src/main/resources'
+    into 'build/config'
 }*/
 
 
-/*  -------------分配配置项----------  */
+/*task rename(type: Copy) {
+    from 'src/main/webapp'
+    into 'build/explodedWar'
+    // 使用一个闭包方式重命名文件
+    rename { String fileName ->
+        fileName.replace('aa', 'hello')
+    }
+}*/
+
+//task copyMethod {
+//    doLast {
+//        copy {
+//            from 'src/main/webapp'
+//            into 'build/explodedWar'
+//            include '**/*.html'
+//            include '**/*.jsp'
+//            include '**/*.txt'
+//        }
+//    }
+//}
+
 /*
-//①.F是任务名，前面通过具名参数给map的属性赋值,以参数方式指定任务的属性信息
-task(group: "atguigu",description: "this is task B","F")
-
-//②.H是任务名，定义任务的同时，在内部直接指定属性信息
-task("H") {
-    group("atguigu")
-    description("this is the task H")
-}
-
-//③.Y是任务名，给已有的任务 在外部直接指定属性信息
-task "y"{}
-y.group="atguigu"
-clean.group("atguigu") //案例：给已有的clean任务重新指定组信息
-*/
-
-
-/*  -------------演示删除build目录----------  */
-/*tasks.register('myClean', Delete) {
-    delete buildDir // 只能删除当前模块下的 build 目录
+copy {
+    //相对路径或者绝对路径
+    from file('src/main/resources/dd.txt')
+    //file也可以换成new File()
+    into this.buildDir.absolutePath
 }*/
 
-/*  -------------自定义task类型----------  */
-/*def myTask= task MyDefinitionTask (type: CustomTask)
 
-myTask.doFirst(){
-    println "task 执行之前 执行的 doFirst方法"
-}
-
-myTask.doLast(){
-    println "task 执行之后 执行的 doLast方法"
-}
-
-class CustomTask extends DefaultTask {
-    //@TaskAction表示Task本身要执行的方法
-    @TaskAction
-    def doSelf(){
-        println "Task 自身 在执行的in doSelf"
-    }
+/*task myZip(type: Zip) {
+    from 'src/main'
+    into 'build' //保存到build目录中
+    archiveBaseName = 'myGame'
+//    archiveFileName = "myGame.zip"
 }*/
 
-/*  -------------动态分配任务----------  */
-/*4.times { counter ->
-    tasks.register("task$counter") {
-        doLast {
-            println "I'm task number $counter"
-        }
-    }
-}*/
+// 使用zipTree
+FileTree zip = zipTree('src/main/resources/assets.zip')
+zip.forEach {file -> println file.name}
+// 使用tarTree
+FileTree tar = tarTree('someFile.tar')
 
-/*4.times { counter ->
-    tasks.register("task$counter") {
-        doLast {
-            println "I'm task number $counter"
-        }
-    }
-}
-task2.enabled=false
-
-tasks.named('task0') { dependsOn('task2', 'task3') }*/
-
-/*  -------------任务超时----------  */
-/*task a() {
-    doLast {
-        Thread.sleep(1000)
-        println "当前任务a执行了"
-    }
-    timeout = Duration.ofMillis(500)
-}
-task b() {
-    doLast {
-        println "当前任务b执行了"
-    }
-}*/
-
-/*  -------------任务查找----------  */
-/*task atguigu {
-    doLast {
-        println "让天下没有难学的技术：尚硅谷"
-    }
-}
-//根据任务名查找（只能查找当前模块下的任务）
-tasks.findByName("atguigu").doFirst({println "尚硅谷校区1：北京...."})
-tasks.getByName("atguigu").doFirst({println "尚硅谷校区2：深圳...."})
-//根据任务路径查找【相对路径】
-tasks.findByPath(":atguigu").doFirst({println "尚硅谷校区3：上海...."})
-tasks.getByPath(":atguigu").doFirst({println "尚硅谷校区4：武汉...."})*/
-
-
-/*  -------------任务的规则----------  */
-/*task hello {
-    doLast {
-        println 'hello 尚硅谷的粉丝们'
-    }
-}
-tasks.addRule("对该规则的一个描述，便于调试、查看等"){
-    String taskName -> task(taskName) {
-        doLast {
-            println "该${taskName}任务不存在，请查证后再执行"
-        }
-    }
-}*/
-
-/*  -------------onlyIf----------  */
-task hello {
-    doLast {
-        println 'hello 尚硅谷的粉丝们'
-    }
-}
-hello.onlyIf { !project.hasProperty('fensi') }
-
-/*  ------------- 默认任务 ----------  */
-defaultTasks 'myClean', 'myRun'
-
-tasks.register('myClean'){
-    doLast {
-        println 'Default Cleaning!'
-    }
-}
-tasks.register('myRun') {
-    doLast {
-        println 'Default Running!'
-    }
-}
-tasks.register('other') {
-    doLast {
-        println "I'm not a default task!"
-    }
-}
