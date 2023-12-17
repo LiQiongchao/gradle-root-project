@@ -1,7 +1,48 @@
-plugins {
+// 第三方插件,传统引入，buildscript 需要放在所有插件的前面
+/*buildscript {
+    ext {
+        springBootVersion = "2.3.3.RELEASE"
+    }
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+        jcenter()
+    }
+//此处先引入插件
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}*/
+
+buildscript {
+    repositories {
+        maven { url "$rootDir/lib/release" }
+    }
+    dependencies {
+        classpath "com.qiong.plugin:library:1.0.0"
+    }
+}
+
+
+/*plugins {
     id 'java'
 //    id("java-library")
-}
+}*/
+
+//map具名参数方式
+//apply plugin : 'java'
+
+/*apply{
+    plugin 'java'
+}*/
+
+
+//使用方式1：Map具名参数,全类名, 简易名(包已经导入的情况下)
+//apply plugin: org.gradle.api.plugins.JavaPlugin
+//org.gradle.api.plugins 默认导入：使用方式2
+//apply plugin: JavaPlugin
+apply (plugin: 'java') //核心插件，无需事先引入，使用方式3:插件的id
+
 
 group = 'com.yupop.root'
 version = '1.0-SNAPSHOT'
@@ -19,77 +60,68 @@ test {
     useJUnitPlatform()
 }
 
-//ConfigurableFileTree tree = fileTree('src/main').include('**/*.java')// 第一种方式:使用路径创建文件树对象，同时指定包含的文件
-////第二种方式:通过闭包创建文件树:
-//tree = fileTree('src/main') {
-//    include '**/*.java'
-//}
-//tree = fileTree(dir: 'src/main', include: '**/*.java') //第三种方式:通过路径和闭包创建文件树：具名参数给map传值
-//tree = fileTree(dir: 'src/main', includes: ['**/*.java', '**/*.xml', '**/*.txt'], exclude: '**/*test*/**')
-//tree.each {File file -> // 遍历文件树内的所有文件
-//    println file
-//    println file.name
-//}
-
-/*task copyTask(type: Copy) {
-    from 'src/main/resources'
-    into 'build/config'
-}*/
-
-
-/*task rename(type: Copy) {
-    from 'src/main/webapp'
-    into 'build/explodedWar'
-    // 使用一个闭包方式重命名文件
-    rename { String fileName ->
-        fileName.replace('aa', 'hello')
+// 脚本插件
+//build.gradle文件
+//map作为参数
+/*apply from: 'version.gradle'
+task taskVersion{
+    doLast{
+        println "公司名称为：${company},JDK版本是${cfgs.compileSdkVersion},版本号是${spring.version}"
     }
 }*/
 
-//task copyMethod {
-//    doLast {
-//        copy {
-//            from 'src/main/webapp'
-//            into 'build/explodedWar'
-//            include '**/*.html'
-//            include '**/*.jsp'
-//            include '**/*.txt'
-//        }
-//    }
-//}
+
+//再应用插件
+//apply plugin: 'org.springframework.boot' //社区插件,需要事先引入，不必写版本号
 
 /*
-copy {
-    //相对路径或者绝对路径
-    from file('src/main/resources/dd.txt')
-    //file也可以换成new File()
-    into this.buildDir.absolutePath
+// DLS引入第三方插件
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
 }*/
 
-
-/*task myZip(type: Zip) {
-    from 'src/main'
-    into 'build' //保存到build目录中
-    archiveBaseName = 'myGame'
-//    archiveFileName = "myGame.zip"
-}*/
-
-// 使用zipTree
-FileTree zip = zipTree('src/main/resources/assets.zip')
-zip.forEach {file -> println file.name}
-// 使用tarTree
-FileTree tar = tarTree('someFile.tar')
-
-dependencies {
-    //①.依赖当前项目下的某个模块[子工程]
-    implementation project(':subject01')
-    //②.直接依赖本地的某个jar文件
-    implementation files('libs/foo.jar', 'libs/bar.jar')
-    //②.配置某文件夹作为依赖项
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    //③.直接依赖
-    implementation 'org.apache.logging.log4j:log4j:2.17.2'
+// 自定义简单插件
+/*class GreetingPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        project.task('hello') {
+            doLast {
+                println 'Hello from the GreetingPlugin'
+            }
+        }
+    }
 }
 
+// Apply the plugin
+apply plugin: GreetingPlugin*/
 
 
+// 自定义插件
+/*interface GreetingPluginExtension {
+    Property<String> getMessage()
+}
+
+class GreetingPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        // Add the 'greeting' extension object
+        def extension = project.extensions.create('greeting', GreetingPluginExtension)
+        extension.message.convention('Hello from GreetingPlugin')
+        // Add a task that uses configuration from the extension object
+        project.task('hello') {
+            doLast {
+                println extension.message.get()
+            }
+        }
+    }
+}
+
+apply plugin: GreetingPlugin
+
+// Configure the extension
+greeting.message = 'Hi from Gradle'*/
+
+//apply plugin: 'java'
+//是在 qiongplugin 中定义的插件 ID
+apply plugin: 'com.qiong.plugin'
+
+// buildSrc
+//apply plugin: 'com.qiong.plugin'
