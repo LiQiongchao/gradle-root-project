@@ -1,0 +1,127 @@
+// 第三方插件,传统引入，buildscript 需要放在所有插件的前面
+/*buildscript {
+    ext {
+        springBootVersion = "2.3.3.RELEASE"
+    }
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+        jcenter()
+    }
+//此处先引入插件
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}*/
+
+buildscript {
+    repositories {
+        maven { url "$rootDir/lib/release" }
+    }
+    dependencies {
+        classpath "com.qiong.plugin:library:1.0.0"
+    }
+}
+
+
+/*plugins {
+    id 'java'
+//    id("java-library")
+}*/
+
+//map具名参数方式
+//apply plugin : 'java'
+
+/*apply{
+    plugin 'java'
+}*/
+
+
+//使用方式1：Map具名参数,全类名, 简易名(包已经导入的情况下)
+//apply plugin: org.gradle.api.plugins.JavaPlugin
+//org.gradle.api.plugins 默认导入：使用方式2
+//apply plugin: JavaPlugin
+apply (plugin: 'java') //核心插件，无需事先引入，使用方式3:插件的id
+
+
+group = 'com.yupop.root'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// 脚本插件
+//build.gradle文件
+//map作为参数
+/*apply from: 'version.gradle'
+task taskVersion{
+    doLast{
+        println "公司名称为：${company},JDK版本是${cfgs.compileSdkVersion},版本号是${spring.version}"
+    }
+}*/
+
+
+//再应用插件
+//apply plugin: 'org.springframework.boot' //社区插件,需要事先引入，不必写版本号
+
+/*
+// DLS引入第三方插件
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+}*/
+
+// 自定义简单插件
+/*class GreetingPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        project.task('hello') {
+            doLast {
+                println 'Hello from the GreetingPlugin'
+            }
+        }
+    }
+}
+
+// Apply the plugin
+apply plugin: GreetingPlugin*/
+
+
+// 自定义插件
+/*interface GreetingPluginExtension {
+    Property<String> getMessage()
+}
+
+class GreetingPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        // Add the 'greeting' extension object
+        def extension = project.extensions.create('greeting', GreetingPluginExtension)
+        extension.message.convention('Hello from GreetingPlugin')
+        // Add a task that uses configuration from the extension object
+        project.task('hello') {
+            doLast {
+                println extension.message.get()
+            }
+        }
+    }
+}
+
+apply plugin: GreetingPlugin
+
+// Configure the extension
+greeting.message = 'Hi from Gradle'*/
+
+//apply plugin: 'java'
+//是在 qiongplugin 中定义的插件 ID
+apply plugin: 'com.qiong.plugin'
+
+// buildSrc
+//apply plugin: 'com.qiong.plugin'
