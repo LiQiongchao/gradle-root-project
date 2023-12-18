@@ -18,11 +18,14 @@ test {
     useJUnitPlatform()
 }
 
-/*task A {
-    group "Qiong"
-    doLast {
-        println "TaskA.."
+task B {
+    println "SubProject01 taskB"
+    doFirst(){
+        println "SubProject01 taskB doFirst"
     }
-}*/
+    doLast(){
+        println "SubProject01 taskB doLast"
+    }
+}
 
 

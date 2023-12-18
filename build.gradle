@@ -59,5 +59,16 @@ compileJava() {
 //sourceCompatibility=JavaVersion.VERSION_1_8
 //targetCompatibility=JavaVersion.VERSION_1_8
 
+task A {
+    println "root taskA"
+    doFirst(){
+        println "root taskA doFirst"
+    }
+    doLast(){
+        println "root taskA doLast"
+    }
+}
+
+
 
 
